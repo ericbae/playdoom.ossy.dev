@@ -5,179 +5,80 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta
       name="description"
-      content="Deploy a private browser deathmatch game to your own Cloudflare account and share the room link with friends."
+      content="Deploy PlayDoom to your own Cloudflare account and share a private browser game link with friends."
     >
     <title>PlayDoom</title>
     <link rel="stylesheet" href="/styles.css">
-    <script src="/app.js" defer></script>
   </head>
   <body>
-    <header class="site-header">
-      <a class="brand" href="/">PlayDoom</a>
-      <nav aria-label="Primary">
-        <a href="#deploy">Deploy</a>
-        <a href="#guide">Guide</a>
-        <a href="#limits">Limits</a>
-        <a href="#template">Template</a>
-      </nav>
-    </header>
-
-    <main>
-      <section class="hero">
-        <div class="hero-media" aria-hidden="true"></div>
-        <div class="hero-content">
-          <p class="eyebrow">Cloudflare Worker game template</p>
-          <h1>PlayDoom</h1>
-          <p class="lede">
-            Deploy a private browser deathmatch room to your own Cloudflare account. No server setup.
-            Share the URL with friends and play from the browser.
-          </p>
-          <div class="hero-actions" id="deploy">
-            <a
-              class="button primary"
-              href="https://deploy.workers.cloudflare.com/?url=https://github.com/ericbae/playdoom-template"
-            >Deploy to Cloudflare</a>
-            <a class="button secondary" href="https://github.com/ericbae/playdoom-template">View template</a>
-          </div>
+    <main class="page">
+      <section class="intro" aria-labelledby="page-title">
+        <p class="label">PlayDoom</p>
+        <h1 id="page-title">A private browser game you deploy to your own Cloudflare account.</h1>
+        <p>
+          PlayDoom is a Cloudflare Worker template for small browser deathmatch games using FreeDM/Freedoom
+          assets. You deploy your own copy, get your own Worker URL, then share room links with friends.
+        </p>
+        <p>
+          This website does not host the games. It only explains the setup and points you to the deployable
+          template repository.
+        </p>
+        <div class="actions">
+          <a class="primary-link" href="https://deploy.workers.cloudflare.com/?url=https://github.com/ericbae/playdoom-template">
+            Deploy to Cloudflare
+          </a>
+          <a href="https://github.com/ericbae/playdoom-template">View template repo</a>
         </div>
+        <dl class="facts">
+          <div>
+            <dt>Players</dt>
+            <dd>Up to 4 playable slots.</dd>
+          </div>
+          <div>
+            <dt>Hosting</dt>
+            <dd>Runs on your Cloudflare account.</dd>
+          </div>
+          <div>
+            <dt>Assets</dt>
+            <dd>Uses FreeDM/Freedoom game data.</dd>
+          </div>
+        </dl>
       </section>
 
-      <section class="band intro-band">
-        <div class="section-grid">
-          <div>
-            <p class="eyebrow">How it works</p>
-            <h2>Your copy runs on your account.</h2>
-          </div>
-          <div class="flow">
-            <article>
-              <span>01</span>
-              <h3>Deploy</h3>
-              <p>Cloudflare clones the template and provisions the Worker, Static Assets, and Durable Object room router.</p>
-            </article>
-            <article>
-              <span>02</span>
-              <h3>Host</h3>
-              <p>Open your Worker URL, choose a FreeDM map and time limit, then copy the invite link.</p>
-            </article>
-            <article>
-              <span>03</span>
-              <h3>Play</h3>
-              <p>Friends join before the match starts. The browser engine handles the deathmatch session.</p>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="band guide-band" id="guide">
-        <div class="guide-layout">
-          <div>
-            <p class="eyebrow">Step-by-step</p>
-            <h2>Deploy without granting access to every repo.</h2>
-            <p>
-              Create one empty GitHub repository first, then authorize Cloudflare only for that repository during setup.
-              Cloudflare will copy the PlayDoom template into it and deploy your Worker.
-            </p>
-          </div>
-          <ol class="deploy-steps">
-            <li>
-              <span>01</span>
-              <div>
-                <h3>Create an empty GitHub repo</h3>
-                <p>Use your own GitHub account. Do not add a README, license, or gitignore file.</p>
-              </div>
-            </li>
-            <li>
-              <span>02</span>
-              <div>
-                <h3>Click Deploy to Cloudflare</h3>
-                <p>Cloudflare opens the setup flow for the public <code>playdoom-template</code> source repo.</p>
-              </div>
-            </li>
-            <li>
-              <span>03</span>
-              <div>
-                <h3>Connect your Git account</h3>
-                <p>When GitHub asks what Cloudflare can access, choose only the empty PlayDoom repo you created.</p>
-              </div>
-            </li>
-            <li>
-              <span>04</span>
-              <div>
-                <h3>Set up the application</h3>
-                <p>Use the empty repo as the destination, choose a Worker name, and keep the generated Cloudflare resources.</p>
-              </div>
-            </li>
-            <li>
-              <span>05</span>
-              <div>
-                <h3>Add DOOM_KEY</h3>
-                <p>Paste a long random value when Cloudflare asks for the <code>DOOM_KEY</code> secret. This signs private room links.</p>
-              </div>
-            </li>
-            <li>
-              <span>06</span>
-              <div>
-                <h3>Open your Worker URL</h3>
-                <p>Cloudflare deploys your copy and shows a <code>workers.dev</code> URL. Open it, start a room, and share the invite link.</p>
-              </div>
-            </li>
-          </ol>
-        </div>
-      </section>
-
-      <section class="band preview-band">
-        <div class="split">
-          <div>
-            <p class="eyebrow">Included</p>
-            <h2>FreeDM maps, browser engine, room links.</h2>
-            <p>
-              The template bundles generated map previews, FreeDM assets, and a WebAssembly Doom-compatible engine
-              behind a simple browser interface.
-            </p>
-          </div>
-          <div class="shot-grid" aria-label="Gameplay previews">
-            <img src="/assets/map-shots/MAP08.png" alt="FreeDM gameplay preview on MAP08">
-            <img src="/assets/map-shots/MAP21.png" alt="FreeDM gameplay preview on MAP21">
-            <img src="/assets/map-shots/MAP31.png" alt="FreeDM gameplay preview on MAP31">
-          </div>
-        </div>
-      </section>
-
-      <section class="band limits-band" id="limits">
-        <div class="section-grid compact">
-          <div>
-            <p class="eyebrow">Current limits</p>
-            <h2>Built for small private games.</h2>
-          </div>
-          <ul class="limits-list">
-            <li>Up to 4 playable slots.</li>
-            <li>Players should join before the host starts the match.</li>
-            <li>Frags are shown in-game, but there is no persistent scoreboard yet.</li>
-            <li>The deploy uses FreeDM/Freedoom assets, not commercial game data.</li>
-          </ul>
-        </div>
-      </section>
-
-      <section class="band template-band" id="template">
-        <div class="template-callout">
-          <div>
-            <p class="eyebrow">Template repo</p>
-            <h2>Deploy or fork the Worker template.</h2>
-            <p>
-              The template contains the Worker, Durable Object room router, browser UI, asset preparation scripts,
-              smoke tests, and self-hosting docs.
-            </p>
-          </div>
-          <div class="repo-box">
-            <code>github.com/ericbae/playdoom-template</code>
-            <button id="copy-repo" type="button">Copy deploy URL</button>
-          </div>
-        </div>
+      <section class="instructions" id="guide" aria-labelledby="deploy-title">
+        <p class="label">Setup</p>
+        <h2 id="deploy-title">How to deploy</h2>
+        <ol>
+          <li>
+            <h3>Create an empty GitHub repository</h3>
+            <p>Use your own GitHub account. Do not add a README, license, or gitignore.</p>
+          </li>
+          <li>
+            <h3>Click Deploy to Cloudflare</h3>
+            <p>Cloudflare opens the setup flow for the public <code>playdoom-template</code> source repo.</p>
+          </li>
+          <li>
+            <h3>Connect GitHub</h3>
+            <p>When GitHub asks what Cloudflare can access, choose only the empty repo you created.</p>
+          </li>
+          <li>
+            <h3>Set up the application</h3>
+            <p>Use the empty repo as the destination. Choose a Worker name and keep the generated resources.</p>
+          </li>
+          <li>
+            <h3>Add <code>DOOM_KEY</code></h3>
+            <p>Use a long random value. This signs private room links for your deployed copy.</p>
+          </li>
+          <li>
+            <h3>Open your Worker URL</h3>
+            <p>Cloudflare deploys your copy and shows a <code>workers.dev</code> URL. Open it and start a room.</p>
+          </li>
+        </ol>
+        <p class="note">
+          Players should join before the host starts the match. Scores are shown in-game, but there is no
+          persistent scoreboard yet.
+        </p>
       </section>
     </main>
-
-    <footer>
-      <p>PlayDoom uses FreeDM/Freedoom assets and a Doom-compatible engine artifact. This is not official Doom hosting.</p>
-    </footer>
   </body>
 </html>
