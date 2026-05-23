@@ -25,7 +25,9 @@ Open `http://localhost:8788`.
 npm run deploy
 ```
 
-The GitHub Actions workflow expects these repository secrets:
+The GitHub Actions workflow for this website expects these repository secrets in `ericbae/playdoom.ossy.dev`:
 
 - `CLOUDFLARE_ACCOUNT_ID`
 - `CLOUDFLARE_API_TOKEN`
+
+These are only for deploying the public website. People deploying the game template through the Deploy to Cloudflare button do not need to add these secrets to this repo.
