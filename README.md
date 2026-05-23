@@ -1,14 +1,14 @@
 # PlayDoom Website
 
-Public installer website for PlayDoom.
+Public explainer and installer website for PlayDoom.
 
-This repo explains the product and links users to the deployable game template:
+This repo is the website for `https://playdoom.ossy.dev`. It explains the product and links users to the deployable game template:
 
 ```text
 https://github.com/ericbae/playdoom-template
 ```
 
-The actual Cloudflare Worker game lives in `playdoom-template`.
+The actual Cloudflare Worker game does not live here. It lives in `playdoom-template`.
 
 ## Local Development
 
