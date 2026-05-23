@@ -10,7 +10,7 @@ https://github.com/ericbae/playdoom-template
 
 The actual Cloudflare Worker game does not live here. It lives in `playdoom-template`.
 
-The website is a simple text-based page with setup instructions and links to the deployable template.
+The website is a simple setup page with one gameplay preview, deployment instructions, and links to the deployable template.
 
 ## Local Development
 

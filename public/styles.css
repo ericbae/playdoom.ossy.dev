@@ -30,6 +30,10 @@ p {
   line-height: 1.65;
 }
 
+img {
+  max-width: 100%;
+}
+
 h1,
 h2,
 h3 {
@@ -102,6 +106,24 @@ code {
   background: var(--accent);
   color: #fff;
   text-decoration: none;
+}
+
+.preview {
+  margin: 30px 0 0;
+}
+
+.preview img {
+  display: block;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #ebe6da;
+}
+
+.preview figcaption {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 13px;
 }
 
 .facts {
