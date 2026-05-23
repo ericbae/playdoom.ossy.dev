@@ -96,6 +96,32 @@ code {
   margin: 28px 0;
 }
 
+.benefits {
+  display: grid;
+  gap: 8px;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.benefits li {
+  position: relative;
+  padding-left: 22px;
+  color: var(--text);
+  line-height: 1.45;
+}
+
+.benefits li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.65em;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
 .primary-link {
   display: inline-flex;
   min-height: 44px;
@@ -162,19 +188,19 @@ ol {
   counter-reset: deploy-step;
 }
 
-li {
+.instructions li {
   position: relative;
   counter-increment: deploy-step;
   padding: 0 0 22px 42px;
   border-left: 1px solid var(--line);
 }
 
-li:last-child {
+.instructions li:last-child {
   padding-bottom: 0;
   border-left-color: transparent;
 }
 
-li::before {
+.instructions li::before {
   content: counter(deploy-step);
   position: absolute;
   left: -16px;
@@ -191,7 +217,7 @@ li::before {
   font-weight: 800;
 }
 
-li p {
+.instructions li p {
   margin-bottom: 0;
 }
 
