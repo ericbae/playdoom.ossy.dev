@@ -16,6 +16,7 @@
       <a class="brand" href="/">PlayDoom</a>
       <nav aria-label="Primary">
         <a href="#deploy">Deploy</a>
+        <a href="#guide">Guide</a>
         <a href="#limits">Limits</a>
         <a href="#template">Template</a>
       </nav>
@@ -64,6 +65,63 @@
               <p>Friends join before the match starts. The browser engine handles the deathmatch session.</p>
             </article>
           </div>
+        </div>
+      </section>
+
+      <section class="band guide-band" id="guide">
+        <div class="guide-layout">
+          <div>
+            <p class="eyebrow">Step-by-step</p>
+            <h2>Deploy without granting access to every repo.</h2>
+            <p>
+              Create one empty GitHub repository first, then authorize Cloudflare only for that repository during setup.
+              Cloudflare will copy the PlayDoom template into it and deploy your Worker.
+            </p>
+          </div>
+          <ol class="deploy-steps">
+            <li>
+              <span>01</span>
+              <div>
+                <h3>Create an empty GitHub repo</h3>
+                <p>Use your own GitHub account. Do not add a README, license, or gitignore file.</p>
+              </div>
+            </li>
+            <li>
+              <span>02</span>
+              <div>
+                <h3>Click Deploy to Cloudflare</h3>
+                <p>Cloudflare opens the setup flow for the public <code>playdoom-template</code> source repo.</p>
+              </div>
+            </li>
+            <li>
+              <span>03</span>
+              <div>
+                <h3>Connect your Git account</h3>
+                <p>When GitHub asks what Cloudflare can access, choose only the empty PlayDoom repo you created.</p>
+              </div>
+            </li>
+            <li>
+              <span>04</span>
+              <div>
+                <h3>Set up the application</h3>
+                <p>Use the empty repo as the destination, choose a Worker name, and keep the generated Cloudflare resources.</p>
+              </div>
+            </li>
+            <li>
+              <span>05</span>
+              <div>
+                <h3>Add DOOM_KEY</h3>
+                <p>Paste a long random value when Cloudflare asks for the <code>DOOM_KEY</code> secret. This signs private room links.</p>
+              </div>
+            </li>
+            <li>
+              <span>06</span>
+              <div>
+                <h3>Open your Worker URL</h3>
+                <p>Cloudflare deploys your copy and shows a <code>workers.dev</code> URL. Open it, start a room, and share the invite link.</p>
+              </div>
+            </li>
+          </ol>
         </div>
       </section>
 
