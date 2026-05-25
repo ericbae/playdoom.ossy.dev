@@ -53,23 +53,23 @@
       "duration": 6,
       "kicker": "Step 3",
       "title": "Connect your own GitHub account",
-      "body": "Cloudflare needs Git access so it can copy the template and deploy from the repository you choose.",
+      "body": "Cloudflare will ask you to connect a Git provider. Choose your own GitHub account so it can copy the template into your repo.",
       "bullets": [
         "Use your GitHub account",
-        "Do not connect the ericbae account"
-      ],
-      "screenshot": "video/screenshots/03-connect-github.png"
+        "Do not connect the ericbae account",
+        "Continue back to Cloudflare after GitHub authorizes access"
+      ]
     },
     {
       "duration": 6,
       "kicker": "Step 4",
       "title": "Limit repository access",
-      "body": "When GitHub asks what Cloudflare can access, choose only the empty repository you created.",
+      "body": "When GitHub asks what Cloudflare can access, choose only the empty repository you created for PlayDoom.",
       "bullets": [
-        "Avoid granting access to every repository",
-        "Select only your PlayDoom repository"
-      ],
-      "screenshot": "video/screenshots/04-limit-repo-access.png"
+        "Choose selected repositories",
+        "Select only your empty PlayDoom repo",
+        "Avoid granting access to every repository"
+      ]
     },
     {
       "duration": 6,
