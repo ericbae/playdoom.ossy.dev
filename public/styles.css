@@ -30,7 +30,8 @@ p {
   line-height: 1.65;
 }
 
-img {
+img,
+video {
   max-width: 100%;
 }
 
@@ -179,6 +180,25 @@ dd {
   border-radius: 6px;
   padding: clamp(22px, 4vw, 34px);
   background: var(--panel);
+}
+
+.setup-video {
+  margin: 0 0 28px;
+}
+
+.setup-video video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #171717;
+}
+
+.setup-video figcaption {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 13px;
 }
 
 ol {
