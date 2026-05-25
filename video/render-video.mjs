@@ -14,6 +14,7 @@ const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
 const width = manifest.width || 1920;
 const height = manifest.height || 1080;
 const fps = manifest.fps || 30;
+const includeMusic = process.env.VIDEO_MUSIC !== "0";
 
 await mkdir(frameDir, { recursive: true });
 await mkdir(outputDir, { recursive: true });
@@ -30,20 +31,42 @@ for (let index = 0; index < manifest.slides.length; index += 1) {
 const concatPath = new URL("build/concat.txt", import.meta.url);
 await writeFile(concatPath, concatFile(frameFiles));
 
-await run("ffmpeg", [
+const totalDuration = frameFiles.reduce((sum, frame) => sum + frame.duration, 0);
+const musicPath = new URL("build/music.wav", import.meta.url);
+if (includeMusic) {
+  await writeFile(musicPath, createMusicWav(totalDuration));
+}
+
+const ffmpegArgs = [
   "-y",
   "-f",
   "concat",
   "-safe",
   "0",
   "-i",
-  filePath(concatPath),
+  filePath(concatPath)
+];
+
+if (includeMusic) {
+  ffmpegArgs.push("-i", filePath(musicPath));
+}
+
+ffmpegArgs.push(
   "-vf",
   `fps=${fps},format=yuv420p`,
   "-movflags",
-  "+faststart",
+  "+faststart"
+);
+
+if (includeMusic) {
+  ffmpegArgs.push("-c:a", "aac", "-b:a", "128k", "-shortest");
+}
+
+ffmpegArgs.push(
   filePath(outputPath)
-]);
+);
+
+await run("ffmpeg", ffmpegArgs);
 
 console.log(`Rendered ${filePath(outputPath)}`);
 
@@ -88,9 +111,10 @@ async function loadScreenshot(slide) {
 }
 
 function slideSvg(slide, index, hasScreenshot) {
-  const titleLines = wrap(slide.title, 22);
-  const bodyLines = wrap(slide.body || "", 54);
-  const bulletLines = (slide.bullets || []).map((bullet) => wrap(bullet, 42));
+  const wantsScreenshot = Boolean(slide.screenshot);
+  const titleLines = wrap(slide.title, wantsScreenshot ? 22 : 32);
+  const bodyLines = wrap(slide.body || "", wantsScreenshot ? 54 : 76);
+  const bulletLines = (slide.bullets || []).map((bullet) => wrap(bullet, wantsScreenshot ? 42 : 62));
   const placeholder = slide.screenshot || "";
 
   let y = 166;
@@ -117,7 +141,9 @@ function slideSvg(slide, index, hasScreenshot) {
 
   const media = hasScreenshot
     ? `<rect x="990" y="130" width="820" height="600" rx="22" fill="#ffffff" stroke="#d8d2c6"/>`
-    : placeholderCard(placeholder);
+    : placeholder
+      ? placeholderCard(placeholder)
+      : "";
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
@@ -200,6 +226,68 @@ function run(command, args) {
       rejectPromise(new Error(`${command} exited with code ${code}`));
     });
   });
+}
+
+function createMusicWav(durationSeconds) {
+  const sampleRate = 44100;
+  const channels = 2;
+  const totalSamples = Math.ceil(durationSeconds * sampleRate);
+  const bytesPerSample = 2;
+  const dataSize = totalSamples * channels * bytesPerSample;
+  const buffer = Buffer.alloc(44 + dataSize);
+
+  buffer.write("RIFF", 0);
+  buffer.writeUInt32LE(36 + dataSize, 4);
+  buffer.write("WAVE", 8);
+  buffer.write("fmt ", 12);
+  buffer.writeUInt32LE(16, 16);
+  buffer.writeUInt16LE(1, 20);
+  buffer.writeUInt16LE(channels, 22);
+  buffer.writeUInt32LE(sampleRate, 24);
+  buffer.writeUInt32LE(sampleRate * channels * bytesPerSample, 28);
+  buffer.writeUInt16LE(channels * bytesPerSample, 32);
+  buffer.writeUInt16LE(16, 34);
+  buffer.write("data", 36);
+  buffer.writeUInt32LE(dataSize, 40);
+
+  const bpm = 96;
+  const beat = 60 / bpm;
+  const chords = [
+    [220.0, 261.63, 329.63],
+    [196.0, 246.94, 293.66],
+    [174.61, 220.0, 261.63],
+    [196.0, 246.94, 329.63]
+  ];
+
+  for (let i = 0; i < totalSamples; i += 1) {
+    const t = i / sampleRate;
+    const chord = chords[Math.floor(t / (beat * 4)) % chords.length];
+    const arp = chord[Math.floor(t / (beat / 2)) % chord.length];
+    const noteTime = t % (beat / 2);
+    const envelope = Math.min(1, noteTime / 0.03) * Math.exp(-noteTime * 4.5);
+    const fadeIn = Math.min(1, t / 2);
+    const fadeOut = Math.min(1, Math.max(0, durationSeconds - t) / 3);
+    const fade = fadeIn * fadeOut;
+
+    const pad =
+      0.045 * Math.sin(2 * Math.PI * (chord[0] / 2) * t) +
+      0.025 * Math.sin(2 * Math.PI * (chord[1] / 2) * t) +
+      0.018 * Math.sin(2 * Math.PI * (chord[2] / 2) * t);
+    const lead = 0.025 * Math.sin(2 * Math.PI * arp * t) * envelope;
+    const pulse = 0.012 * Math.sign(Math.sin(2 * Math.PI * (arp * 2) * t)) * envelope;
+    const sample = clamp((pad + lead + pulse) * fade, -0.18, 0.18);
+    const value = Math.round(sample * 32767);
+    const offset = 44 + i * channels * bytesPerSample;
+
+    buffer.writeInt16LE(value, offset);
+    buffer.writeInt16LE(value, offset + 2);
+  }
+
+  return buffer;
+}
+
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
 }
 
 function escapeXml(value) {

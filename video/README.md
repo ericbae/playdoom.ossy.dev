@@ -1,6 +1,6 @@
 # PlayDoom Setup Video
 
-This folder renders a silent screenshot-and-text walkthrough for YouTube or the website.
+This folder renders a screenshot-and-text walkthrough for YouTube or the website.
 
 Requires `ffmpeg` on your machine.
 
@@ -8,6 +8,12 @@ Requires `ffmpeg` on your machine.
 
 ```bash
 npm run video:render
+```
+
+The renderer adds a quiet original generated music bed by default. To render without music:
+
+```bash
+VIDEO_MUSIC=0 npm run video:render
 ```
 
 Output:
