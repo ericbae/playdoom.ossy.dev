@@ -25,10 +25,9 @@ Replace the placeholder cards by saving real screenshots with these filenames:
 - `video/screenshots/01-empty-github-repo.png`
 - `video/screenshots/02-deploy-button.png`
 - `video/screenshots/05-setup-application.png`
-- `video/screenshots/06-doom-key.png`
 - `video/screenshots/07-deploy-success.png`
 
-The GitHub connection and repository-access steps are text-only slides on purpose. Do not capture those screens unless we later decide to show account-specific UI.
+The GitHub connection, repository-access, and `DOOM_KEY` explanation steps are text-only slides on purpose. Do not capture those screens unless we later decide to show account-specific UI.
 
 Capture rules:
 
