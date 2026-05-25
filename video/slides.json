@@ -53,10 +53,10 @@
       "duration": 6,
       "kicker": "Step 3",
       "title": "Connect your own GitHub account",
-      "body": "Cloudflare will ask you to connect a Git provider. Choose your own GitHub account so it can copy the template into your repo.",
+      "body": "Cloudflare will ask you to connect a Git provider. Use your own GitHub account, then give Cloudflare access to the repo you created in the previous step.",
       "bullets": [
         "Use your GitHub account",
-        "Do not connect the ericbae account",
+        "Give Cloudflare access to the repo you created",
         "Continue back to Cloudflare after GitHub authorizes access"
       ]
     },
