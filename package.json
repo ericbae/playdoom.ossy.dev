@@ -5,9 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "wrangler dev --local --port 8788",
-    "deploy": "wrangler deploy"
+    "deploy": "wrangler deploy",
+    "video:render": "node video/render-video.mjs"
   },
   "devDependencies": {
+    "sharp": "^0.34.5",
     "wrangler": "^4.90.0"
   }
 }

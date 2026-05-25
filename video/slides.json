@@ -1,0 +1,132 @@
+{
+  "width": 1920,
+  "height": 1080,
+  "fps": 30,
+  "slides": [
+    {
+      "duration": 4,
+      "kicker": "PlayDoom setup",
+      "title": "Play Doom with friends in your browser",
+      "body": "Deploy your own copy to Cloudflare, open the Worker URL, and share room links with friends.",
+      "bullets": [
+        "No PlayDoom account",
+        "No game server to maintain",
+        "Browser-based play"
+      ],
+      "screenshot": "public/assets/playdoom-preview.png"
+    },
+    {
+      "duration": 5,
+      "kicker": "What you need",
+      "title": "Before you start",
+      "body": "Have these ready before opening Cloudflare's deploy flow.",
+      "bullets": [
+        "A GitHub account",
+        "A Cloudflare account",
+        "One empty GitHub repository",
+        "A long random value for DOOM_KEY"
+      ]
+    },
+    {
+      "duration": 6,
+      "kicker": "Step 1",
+      "title": "Create an empty GitHub repository",
+      "body": "Use your own GitHub account. Keep the repository empty so Cloudflare can copy the PlayDoom template into it.",
+      "bullets": [
+        "Do not add a README",
+        "Do not add a license",
+        "Do not add a gitignore"
+      ],
+      "screenshot": "video/screenshots/01-empty-github-repo.png"
+    },
+    {
+      "duration": 5,
+      "kicker": "Step 2",
+      "title": "Click Deploy to Cloudflare",
+      "body": "Open playdoom.ossy.dev and start the deploy flow from the main button.",
+      "bullets": [
+        "The source template is github.com/ericbae/playdoom-template"
+      ],
+      "screenshot": "video/screenshots/02-deploy-button.png"
+    },
+    {
+      "duration": 6,
+      "kicker": "Step 3",
+      "title": "Connect your own GitHub account",
+      "body": "Cloudflare needs Git access so it can copy the template and deploy from the repository you choose.",
+      "bullets": [
+        "Use your GitHub account",
+        "Do not connect the ericbae account"
+      ],
+      "screenshot": "video/screenshots/03-connect-github.png"
+    },
+    {
+      "duration": 6,
+      "kicker": "Step 4",
+      "title": "Limit repository access",
+      "body": "When GitHub asks what Cloudflare can access, choose only the empty repository you created.",
+      "bullets": [
+        "Avoid granting access to every repository",
+        "Select only your PlayDoom repository"
+      ],
+      "screenshot": "video/screenshots/04-limit-repo-access.png"
+    },
+    {
+      "duration": 6,
+      "kicker": "Step 5",
+      "title": "Set up the application",
+      "body": "Use the empty repository as the destination. Choose a Worker name and keep the generated Cloudflare resources.",
+      "bullets": [
+        "Destination repo: your empty repo",
+        "Worker name: your choice",
+        "Keep the Durable Object and Static Assets settings"
+      ],
+      "screenshot": "video/screenshots/05-setup-application.png"
+    },
+    {
+      "duration": 5,
+      "kicker": "Step 6",
+      "title": "Add DOOM_KEY",
+      "body": "Cloudflare will ask for the template secret. Paste a long random value.",
+      "bullets": [
+        "Example: use a password generator",
+        "Do not show or share the real value"
+      ],
+      "screenshot": "video/screenshots/06-doom-key.png"
+    },
+    {
+      "duration": 5,
+      "kicker": "Step 7",
+      "title": "Deploy and open your Worker URL",
+      "body": "When deployment finishes, Cloudflare shows your workers.dev URL.",
+      "bullets": [
+        "Open the URL",
+        "Start a room",
+        "Copy the invite link"
+      ],
+      "screenshot": "video/screenshots/07-deploy-success.png"
+    },
+    {
+      "duration": 5,
+      "kicker": "Play",
+      "title": "Share the link with friends",
+      "body": "Friends open the room link in their browser. Players should join before the host starts the match.",
+      "bullets": [
+        "Up to 4 playable slots",
+        "Scores are shown in-game",
+        "No persistent scoreboard yet"
+      ],
+      "screenshot": "public/assets/playdoom-preview.png"
+    },
+    {
+      "duration": 4,
+      "kicker": "Done",
+      "title": "Your copy. Your Cloudflare account.",
+      "body": "PlayDoom does not host your game. You own the deployed Worker and share the link when you want to play.",
+      "bullets": [
+        "playdoom.ossy.dev",
+        "github.com/ericbae/playdoom-template"
+      ]
+    }
+  ]
+}

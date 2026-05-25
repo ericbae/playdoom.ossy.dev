@@ -33,3 +33,13 @@ The GitHub Actions workflow for this website expects these repository secrets in
 - `CLOUDFLARE_API_TOKEN`
 
 These are only for deploying the public website. People deploying the game template through the Deploy to Cloudflare button do not need to add these secrets to this repo.
+
+## Setup Video
+
+The silent setup-video renderer lives in [video/](./video).
+
+```bash
+npm run video:render
+```
+
+It writes `video/output/playdoom-setup.mp4`. Replace the placeholder screenshots in `video/screenshots/` and rerun the command to generate the final YouTube upload.

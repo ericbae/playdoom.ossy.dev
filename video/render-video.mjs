@@ -1,0 +1,215 @@
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { existsSync } from "node:fs";
+import { resolve } from "node:path";
+import { spawn } from "node:child_process";
+import sharp from "sharp";
+
+const root = new URL("..", import.meta.url);
+const manifestPath = new URL("slides.json", import.meta.url);
+const frameDir = new URL("build/frames", import.meta.url);
+const outputDir = new URL("output", import.meta.url);
+const outputPath = new URL("output/playdoom-setup.mp4", import.meta.url);
+
+const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
+const width = manifest.width || 1920;
+const height = manifest.height || 1080;
+const fps = manifest.fps || 30;
+
+await mkdir(frameDir, { recursive: true });
+await mkdir(outputDir, { recursive: true });
+
+const frameFiles = [];
+
+for (let index = 0; index < manifest.slides.length; index += 1) {
+  const slide = manifest.slides[index];
+  const framePath = new URL(`build/frames/slide-${String(index + 1).padStart(2, "0")}.png`, import.meta.url);
+  await renderSlide(slide, index, framePath);
+  frameFiles.push({ framePath, duration: slide.duration || 5 });
+}
+
+const concatPath = new URL("build/concat.txt", import.meta.url);
+await writeFile(concatPath, concatFile(frameFiles));
+
+await run("ffmpeg", [
+  "-y",
+  "-f",
+  "concat",
+  "-safe",
+  "0",
+  "-i",
+  filePath(concatPath),
+  "-vf",
+  `fps=${fps},format=yuv420p`,
+  "-movflags",
+  "+faststart",
+  filePath(outputPath)
+]);
+
+console.log(`Rendered ${filePath(outputPath)}`);
+
+async function renderSlide(slide, index, framePath) {
+  const screenshot = await loadScreenshot(slide);
+  const base = sharp(Buffer.from(slideSvg(slide, index, Boolean(screenshot))), {
+    density: 144
+  }).resize(width, height);
+
+  const composites = [];
+  if (screenshot) {
+    composites.push({
+      input: screenshot,
+      left: 1030,
+      top: 170
+    });
+  }
+
+  await base.composite(composites).png().toFile(filePath(framePath));
+}
+
+async function loadScreenshot(slide) {
+  if (!slide.screenshot) {
+    return null;
+  }
+
+  const screenshotPath = resolve(filePath(root), slide.screenshot);
+  if (!existsSync(screenshotPath)) {
+    return null;
+  }
+
+  return sharp(screenshotPath)
+    .resize({
+      width: 720,
+      height: 500,
+      fit: "inside",
+      withoutEnlargement: true,
+      background: "#f7f5f0"
+    })
+    .png()
+    .toBuffer();
+}
+
+function slideSvg(slide, index, hasScreenshot) {
+  const titleLines = wrap(slide.title, 22);
+  const bodyLines = wrap(slide.body || "", 54);
+  const bulletLines = (slide.bullets || []).map((bullet) => wrap(bullet, 42));
+  const placeholder = slide.screenshot || "";
+
+  let y = 166;
+  const title = titleLines
+    .map((line, i) => `<text x="110" y="${y + i * 76}" class="title">${escapeXml(line)}</text>`)
+    .join("");
+  y += titleLines.length * 76 + 34;
+
+  const body = bodyLines
+    .map((line, i) => `<text x="110" y="${y + i * 38}" class="body">${escapeXml(line)}</text>`)
+    .join("");
+  y += bodyLines.length * 38 + 34;
+
+  const bullets = bulletLines
+    .map((lines) => {
+      const bulletY = y;
+      const text = lines
+        .map((line, i) => `<text x="148" y="${bulletY + i * 32}" class="bullet">${escapeXml(line)}</text>`)
+        .join("");
+      y += Math.max(1, lines.length) * 32 + 18;
+      return `<circle cx="120" cy="${bulletY - 8}" r="7" fill="#9d2f24"/>${text}`;
+    })
+    .join("");
+
+  const media = hasScreenshot
+    ? `<rect x="990" y="130" width="820" height="600" rx="22" fill="#ffffff" stroke="#d8d2c6"/>`
+    : placeholderCard(placeholder);
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+  <style>
+    .kicker { font: 800 28px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #9d2f24; letter-spacing: 0; text-transform: uppercase; }
+    .title { font: 850 70px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #171717; letter-spacing: 0; }
+    .body { font: 400 31px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #5f6468; letter-spacing: 0; }
+    .bullet { font: 700 28px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #171717; letter-spacing: 0; }
+    .small { font: 650 24px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #5f6468; letter-spacing: 0; }
+    .mono { font: 650 24px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: #6f261f; letter-spacing: 0; }
+  </style>
+  <rect width="100%" height="100%" fill="#f7f5f0"/>
+  <text x="110" y="92" class="kicker">${escapeXml(slide.kicker || `Step ${index + 1}`)}</text>
+  ${title}
+  ${body}
+  ${bullets}
+  ${media}
+  <text x="110" y="1010" class="small">playdoom.ossy.dev</text>
+</svg>`;
+}
+
+function placeholderCard(path) {
+  const lines = path ? wrap(path, 34) : ["Text-only slide"];
+  const filename = lines
+    .map((line, i) => `<text x="1080" y="${460 + i * 34}" class="mono">${escapeXml(line)}</text>`)
+    .join("");
+
+  return `
+    <rect x="990" y="130" width="820" height="600" rx="22" fill="#ffffff" stroke="#d8d2c6"/>
+    <text x="1080" y="370" class="small">Drop screenshot here:</text>
+    ${filename}
+  `;
+}
+
+function wrap(text, maxChars) {
+  const words = String(text || "").split(/\s+/).filter(Boolean);
+  const lines = [];
+  let line = "";
+
+  for (const word of words) {
+    if (!line) {
+      line = word;
+    } else if (`${line} ${word}`.length <= maxChars) {
+      line = `${line} ${word}`;
+    } else {
+      lines.push(line);
+      line = word;
+    }
+  }
+
+  if (line) {
+    lines.push(line);
+  }
+
+  return lines.length ? lines : [""];
+}
+
+function concatFile(files) {
+  const lines = [];
+  for (const item of files) {
+    lines.push(`file '${filePath(item.framePath).replaceAll("'", "'\\''")}'`);
+    lines.push(`duration ${item.duration}`);
+  }
+  const last = files.at(-1);
+  lines.push(`file '${filePath(last.framePath).replaceAll("'", "'\\''")}'`);
+  return `${lines.join("\n")}\n`;
+}
+
+function run(command, args) {
+  return new Promise((resolvePromise, rejectPromise) => {
+    const child = spawn(command, args, {
+      stdio: "inherit",
+      cwd: filePath(root)
+    });
+    child.on("close", (code) => {
+      if (code === 0) {
+        resolvePromise();
+        return;
+      }
+      rejectPromise(new Error(`${command} exited with code ${code}`));
+    });
+  });
+}
+
+function escapeXml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
+
+function filePath(url) {
+  return decodeURIComponent(url.pathname);
+}
